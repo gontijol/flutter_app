@@ -54,18 +54,117 @@ class Item {
         'price': 15.0,
         'quantity': 5,
       },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
+      {
+        'name': 'Item 3',
+        'price': 15.0,
+        'quantity': 5,
+      },
     ],
   };
 }
 
 class ItemController extends GetxController {
   final RxList items = <Item>[].obs;
+  List<TextEditingController> nameControllers = [];
+  List<TextEditingController> priceControllers = [];
+  List<TextEditingController> quantityControllers = [];
 
   @override
   void onInit() {
     super.onInit();
 
     loadMockItems();
+    initializeControllers();
   }
 
   void loadMockItems() {
@@ -101,10 +200,40 @@ class ItemController extends GetxController {
     return price * quantity;
   }
 
+  getAllProductsTotalPrice() {
+    return items.fold(
+        0.0,
+        (previousValue, element) =>
+            getTotalPrice(element.price, element.quantity) + previousValue);
+  }
+
   void updateItemQuantity(String name, int quantity) {
     var index = items.indexWhere((item) => item.name == name);
     if (index != -1) {
       items[index].quantity = quantity;
     }
+  }
+
+  void initializeControllers() {
+    nameControllers = [TextEditingController()];
+    priceControllers = [TextEditingController()];
+    quantityControllers = [TextEditingController()];
+  }
+
+  void addItemFromDialog() {
+    addItem(
+      nameControllers[0].text,
+      double.tryParse(priceControllers[0].text.replaceAll(',', '.')) ?? 0.0,
+      int.tryParse(quantityControllers[0].text) ?? 0,
+    );
+    nameControllers[0].clear();
+    priceControllers[0].clear();
+    quantityControllers[0].clear();
+  }
+
+  void prepareEditItem(Item item) {
+    nameControllers[0].text = item.name;
+    priceControllers[0].text = item.price.toString();
+    quantityControllers[0].text = item.quantity.toString();
   }
 }

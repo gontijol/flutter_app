@@ -2,6 +2,7 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:namer_app/core/ui/app_theme.dart';
+import 'package:namer_app/core/ui/colors.dart';
 import 'package:namer_app/routes/app_pages.dart';
 import 'package:namer_app/routes/app_routes.dart';
 import 'package:provider/provider.dart';
@@ -28,14 +29,36 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
+  var _current = WordPair.random();
+  bool _isExpanded = false;
+
+  WordPair get current => _current;
+  bool get isExpanded => _isExpanded;
+
+  void generateNewWordPair() {
+    _current = WordPair.random();
+    notifyListeners();
+  }
+
+  void toggleCardSize() {
+    _isExpanded = !_isExpanded;
+    notifyListeners();
+    Future.delayed(Duration(milliseconds: 400), () {
+      _isExpanded = !_isExpanded;
+
+      notifyListeners();
+    });
+  }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  @override
+  MyHomePageState createState() => MyHomePageState();
+}
+
+class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('My App'),
@@ -43,22 +66,51 @@ class MyHomePage extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 10.0,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(
-                height: MediaQuery.of(context).size.height * 0.3,
-                width: MediaQuery.of(context).size.width * 0.3,
-                child: InkWell(
-                  onTap: () => context.goNamed(AppRoutes.second),
-                  child: Card(
-                    color: Colors.blue.withAlpha(100),
-                    child: Container(
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(appState.current.asPascalCase),
+            Consumer<MyAppState>(
+              builder: (context, appState, child) {
+                var sizeCardWidth = appState.isExpanded
+                    ? MediaQuery.of(context).size.width * 0.5
+                    : MediaQuery.of(context).size.width * 0.3;
+                var sizeCardHeight = appState.isExpanded
+                    ? MediaQuery.of(context).size.height * 0.5
+                    : MediaQuery.of(context).size.height * 0.3;
+
+                var appColor = getRandomColor();
+
+                return AnimatedContainer(
+                  duration: Duration(seconds: 1),
+                  curve: Curves.easeInOut,
+                  height: sizeCardHeight,
+                  width: sizeCardWidth,
+                  child: InkWell(
+                    onLongPress: () {
+                      appState.generateNewWordPair();
+                      appState.toggleCardSize();
+                    },
+                    borderRadius: BorderRadius.circular(10.0),
+                    onTap: () => context.goNamed(AppRoutes.second),
+                    child: Card(
+                      color: appColor,
+                      child: Container(
+                        padding: EdgeInsets.all(10.0),
+                        child: Text(
+                          appState.current.asPascalCase,
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ),
                   ),
-                )),
+                );
+              },
+            ),
+            SizedBox(height: 20),
           ],
         ),
       ),
