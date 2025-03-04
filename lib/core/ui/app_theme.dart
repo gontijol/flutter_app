@@ -6,7 +6,7 @@ final ThemeData appTheme = ThemeData(
   colorScheme: colorScheme,
   textTheme: TextTheme(),
   primaryColor: Colors.black12,
-  scaffoldBackgroundColor: Colors.white70,
+  scaffoldBackgroundColor: backgroundColor,
   textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(
     foregroundColor: WidgetStatePropertyAll<Color>(Colors.white),
